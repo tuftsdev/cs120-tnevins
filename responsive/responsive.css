@@ -1,1 +1,75 @@
 /*CSS for responsive image*/
+body {
+    /*Did this becuase a blinding white back gouernd was annoying*/
+    background-color: #000000;
+}
+
+
+.homer{
+
+    height: 100vh;
+    background-image: url("./homer.jpeg");
+    background-origin: content-box;
+    background-repeat: no-repeat;
+}
+@media screen and (min-width:1200px) {
+    .homer{
+        width: 160px;
+        height: 130px;
+
+    }
+    
+}
+@media screen and (min-width:1100px) and (max-width:1200px) {
+    .homer{
+        background-position-x: -160px ;
+        /*width: 160px;*/
+        height: 130px;
+    }
+    
+}
+@media  screen and (min-width:1000px) and (max-width:1100px){
+    .homer{
+        background-position-y: -130px ;
+        background-position-x: 0px;
+        width: 160px;
+        height: 130px;
+    }
+}
+@media  screen and (min-width:900px) and (max-width:1000px){
+    .homer{
+        background-position-y: -130px ;
+        background-position-x: -160px;
+        height: 130px;
+    }
+}
+@media  screen and (min-width:800px) and (max-width:900px){
+    .homer{
+        background-position-y: -250px ;
+        background-position-x: 0px;
+        width: 160px;
+        height: 130px;
+    }
+}
+@media  screen and (min-width:700px) and (max-width:800px){
+    .homer{
+        background-position-y: -250px ;
+        background-position-x: -160px;
+        height: 130px;
+    }
+}
+@media  screen and (min-width:600px) and (max-width:700px){
+    .homer{
+        background-position-y: -380px ;
+        background-position-x: 0px;
+        width: 160px;
+        height: 130px;
+    }
+}
+@media  screen and (max-width:600px){
+    .homer{
+        background-position-y: -380px ;
+        background-position-x: -160px;
+        height: 130px;
+    }
+}
