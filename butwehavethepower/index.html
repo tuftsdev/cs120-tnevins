@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Union Strike Folk Song</title>
+<link rel="stylesheet" href="./style.css" type="text/css" />
+</head>
+
+<body>
+
+<h1 id="title">Union Strike Folk Song</h1>
+
+<video src="https://www.cs.tufts.edu/comp/120/butwehavethepower.mp4" id="butwehavethepower" controls></video>
+<div id="lyrics"></div>
+
+<script>
+/*
+DOM Lab
+*/
+const video = document.getElementById("butwehavethepower");
+const lyrics = document.getElementById("lyrics");
+const fullPower = document.createElement("h1");
+fullPower.innerText = "full power Mr. Smithers";
+fullPower.classList.add("fullpower");
+fullPower.id = "fullpower";
+const p = document.createElement("p");
+lyrics.appendChild(p);
+power = false;
+song_lyrics = [`Lisa:
+Come gather round, children,
+It's high time ye learned
+\'Bout a hero named Homer
+And a devil named Burns.`,
+               `Lisa:
+               We'll march 'till we drop
+               The girls and the fellas.
+               We'll fight 'till the death
+               Or else fold like umbrellas.`,
+               `So we'll march day and night
+               By the big cooling tower.
+               They have the plant
+               But we have the power.`,
+               `Lenny:
+               Now do "Classical Gas!`,
+               `Everyone:
+               So we'll march day and night
+               By the big cooling tower.
+               They have the plant
+               But we have the power.`
+]
+
+video.addEventListener("timeupdate", function () {
+    if(this.currentTime >=6){
+        p.innerText = song_lyrics[0];
+    }
+    if(this.currentTime >= 15){
+        p.innerText = "";
+    }
+    if(this.currentTime >=16 ){
+        p.innerText = song_lyrics[1];
+    }
+    if(this.currentTime >= 27){
+        p.innerText = "";
+    }
+    if(this.currentTime >=28 && !power){
+        power = true;
+        lyrics.appendChild(fullPower);
+    }
+    if(this.currentTime >=36 && power){
+        lyrics.removeChild(fullPower);
+        power = false;
+    }
+    if(this.currentTime >=38 ){
+        p.innerText = song_lyrics[2];
+    }
+    if(this.currentTime >= 50){
+        p.innerText = "";
+    }
+    if(this.currentTime >=52 ){
+        p.innerText = song_lyrics[3];
+    }
+    if(this.currentTime >= 55){
+        p.innerText = "";
+    }
+    if(this.currentTime >= 73){
+        p.innerText = song_lyrics[4];
+    }
+    if(this.currentTime >= 91){
+        p.innerText = "";
+    }
+    if(this.currentTime >=92){
+        p.innerText = "Mr. Burns being Mr. Burns.";
+    }
+    if(this.currentTime >=106){
+        p.innerText = "Thanks this was a fun lab!";
+    }
+}, false);
+
+</script>
+</body>
+</html>
