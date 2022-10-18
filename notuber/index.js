@@ -1,5 +1,4 @@
 let map;
-let markers = [];
 const iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
 let latLngs = [
     {id: "mXfkjrFw", lat:42.3453, lng:-71.0464},
