@@ -1,4 +1,15 @@
 let map;
+let usrlat;
+let usrlon;
+navigator.geolocation.getCurrentPosition(getLatLon);
+function getLatLon(position) {
+  let lat = position.coords.latitude;
+  let lon = position.coords.longitude;
+    usrlat = lat
+    usrlon = lon
+}
+
+console.log(`${usrlat} ${usrlon}`);
 const iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
 let latLngs = [
     {id: "mXfkjrFw", lat:42.3453, lng:-71.0464},
