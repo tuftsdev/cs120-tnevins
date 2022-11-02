@@ -46,12 +46,14 @@ function addRides(usrlat, usrlon,data){
     });
 
   for( let ride of data){
+    console.log(ride);
     const marker2 = new google.maps.Marker({
       position: new google.maps.LatLng(ride.lat,ride.lng),
       icon: "./car.png",
+      map,
       title: ride.username
   });
-  marker2.setMap(map);
+    console.log(marker2);
   }
 }
 
