@@ -1,59 +1,97 @@
 let map;
 const iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
-let latLngs = [
-    {id: "mXfkjrFw", lat:42.3453, lng:-71.0464},
-    {id: "nZXB8ZHz", lat:42.3662, lng:-71.0621},
-    {id:"Tkwu74WC" , lat:42.3603 , lng: -71.0547},
-    {id: "5KWpnAJN", lat: 42.3472, lng:-71.0802 },
-    {id: "uf5ZrXYw" , lat:42.3663 , lng:-71.0544 },
-    {id:"VMerzMH8" , lat:42.3542 , lng:-71.0704 }
-];
+ let gdata;
 
-function addMarker(obj){
-  let olat = obj.lat;
-  let olng = obj.lng;
-  pos = {lat:olat, lng:olng}//new google.maps.LatLng(lat,lng);
-  const marker = new google.maps.Marker({
-    position: pos,
-    map,
-    icon: "./car.png",
-    title: obj.username
-  });
-  console.log(marker);
+function computeDistance(upos, data){
+  let res = []
+  for(let node of data){  
+    let r = new google.maps.LatLng(node.lat,node.lng);
+    let meters = google.maps.geometry.spherical.computeDistanceBetween(upos, r);
+    if(!isNaN(meters)&& meters >0){
+      node.distance = meters;
+      res.push(meters);
+    }
+  }
+  return res;
 }
+
+function findClosestRide(pos, data){
+  //let pos = new google.maps.LatLng(usrlat,usrlon)
+  let meters = computeDistance(pos,data);
+  let min = Math.min(...meters);
+  for(let node of data){ 
+    if(node.distance === min){
+      return node;
+    }
+  }
+}
+
+function addline(ulat, ulng,data){
+  let pos = new google.maps.LatLng(ulat,ulng)
+  let node = findClosestRide(pos,data);
+  console.log(node);
+  const flightPlanCoordinates = [
+    { lat:node.lat, lng: node.lng },
+    { lat: ulat, lng: ulng },
+  ];
+  const flightPath = new google.maps.Polyline({
+    path: flightPlanCoordinates,
+    geodesic: true,
+    map,
+    strokeColor: "#FF0000",
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+  });
+  let miles = node.distance * .000621 ; 
+  const contentString =
+  '<div id="content">' +
+  '<div id="siteNotice">' +
+  "</div>" +
+  '<h1 id="firstHeading" class="firstHeading">closet ride:'+ node.username+'</h1>' +
+  '<div id="bodyContent">' +
+  "<p>lat:"+ node.lat+ " Long:" +node.lng +
+  "<br/>Distance from ride:"+ miles +" miles</br>formula: miles = meters * 0.000621</p>" +
+  "</div>" +
+  "</div>";
+  return contentString;
+
+}
+
 
 
 function addRides(usrlat, usrlon,data){
   map = new google.maps.Map(document.getElementById("map"), {
     //center: {  lat: 42.352271, lng: -71.05524200000001},
     center: {  lat: usrlat, lng: usrlon},
-    zoom: 8,
+    zoom: 4,
   });
 
-  for( let val of latLngs){
-    const marker = new google.maps.Marker({
-        position: new google.maps.LatLng(val.lat,val.lng),
-        map,
-        icon: "./car.png",
-        title: val.id
-    });
-  }
-
-  const marker1 = new google.maps.Marker({
+  let usermarker = new google.maps.Marker({
     position: new google.maps.LatLng(usrlat,usrlon),
     map,
     title: 'Hello there!'
     });
+    
+
+  usermarker.addListener("click", () => {
+    let contentstr = addline(usrlat,usrlon,data);
+    const infowindow = new google.maps.InfoWindow({
+      content: contentstr,
+      ariaLabel: "miles to location",
+    });
+    infowindow.open({
+      anchor: usermarker,
+      map,
+    });
+  });
 
   for( let ride of data){
-    console.log(ride);
     const marker2 = new google.maps.Marker({
       position: new google.maps.LatLng(ride.lat,ride.lng),
       icon: "./car.png",
       map,
       title: ride.username
   });
-    console.log(marker2);
   }
 }
 
@@ -69,6 +107,7 @@ function addRides(usrlat, usrlon,data){
       }
     }
     http.send(params);
+
 }
 
 
@@ -84,6 +123,6 @@ function getLatLong(position) {
 
 function initMap(){
   navigator.geolocation.getCurrentPosition(getLatLong)
-
 }
+
 window.initMap = initMap;
