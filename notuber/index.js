@@ -96,7 +96,7 @@ function addRides(usrlat, usrlon,data){
 
 
  function getRides(url,usrlat,usrlon) {
-  let params = `username=wgvMs3aL&lat=${usrlat}&lng=${usrlon}`;
+  let params = `username=s0ny&lat=${usrlat}&lng=${usrlon}`;
   let http = new XMLHttpRequest();
   http.open('POST', url, true);
   http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -113,7 +113,6 @@ function addRides(usrlat, usrlon,data){
 function getLatLong(position) {
   let usrlat = position.coords.latitude;
   let usrlon = position.coords.longitude;
- 
     let url = "https://calm-inlet-90299.herokuapp.com/rides"//"https://jordan-marsh.herokuapp.com/rides"
     getRides(url, usrlat, usrlon);
 
