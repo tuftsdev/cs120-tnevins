@@ -29,7 +29,6 @@ function findClosestRide(pos, data){
 function addline(ulat, ulng,data){
   let pos = new google.maps.LatLng(ulat,ulng)
   let node = findClosestRide(pos,data);
-  console.log(node);
   const flightPlanCoordinates = [
     { lat:node.lat, lng: node.lng },
     { lat: ulat, lng: ulng },
@@ -115,7 +114,7 @@ function getLatLong(position) {
   let usrlat = position.coords.latitude;
   let usrlon = position.coords.longitude;
  
-    let url = "https://jordan-marsh.herokuapp.com/rides"
+    let url = "https://calm-inlet-90299.herokuapp.com/rides"//"https://jordan-marsh.herokuapp.com/rides"
     getRides(url, usrlat, usrlon);
 
   }
