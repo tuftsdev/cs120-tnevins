@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>lab 13</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+    <body class="bg-dark">
+        <main class="ontainer mx-4">
+            <section class="row">
+                <h3>Introduction</h3>
+                <p>notuber is a web service that allows people to look for a ride and for drivers to find passengers. <br/>
+                    I was hired to do a security audit on their app to check for any vulnerabilities.</p>
+            </section>
+            <section class="row">
+                <h3>Methodology</h3>
+                <p>For this assignment I approached it primarily as a code review. I also did some black box testing once I had a list of the api urls where I then tested each api end point starting with cross site scripting to some simple sql injection. <br/>   
+                    I examined the code line by line following the flow of events that occur at each api end. <br/>
+                    To confirm findings then do some testing with a locally running version of the service where I would test one api endpoint at a time using a tool called thunder client, which is a visual studio code extension that is good for quick api tests. <br/>
+            </section>
+            <section class="row">
+                <h3>Abstract of findings</h3>
+                <p>
+                    In my examination I found corss site scripting and multiple vectors for sql injection attacks, which are critical vulnerabilities. <br/>
+                    My findings can be neatly summarized as poor sanitization and valdiation of user provided data. <br/>
+                    I also found a few bad practices at play such as, using var keyword in global scope and not defining a non root database user. <br/>
+                    The aforementioned critical vulnerabilities are fairly straight forward to mitigate.<br/> 
+                    First sanitization of any user provided input is a must and will ensure your app gets what it needs to run. The second, and this applies only to the sql injection vectors, is to use prepared queries that except parameters using a client library.
+                </p>
+            </section>
+            <h3 class="row ">  Issues found </h3>
+            <section class="row row-cols-1 row-cols-sm-2 row-cols-md-">
+                <!-- make cards-->
+                <div class="card col bg-dark">
+                    <div class="card-body">
+                      <h5 class="card-title">Code bad practice</h5>
+                      <h6 class="card-subtitle mb-2">using var keyword</h6>
+                      <h6 class="card-subtitle mb-2 ">critical level: low to mid </h6>
+                      <h6 class="card-subtitle mt-2">location: entire server js file</h6>
+                      <p class="card-text">
+                        var in the global scope is dangerous and a bad practice. It can create scoping, readability and other problems in your code base. 
+                        This is especially critcal when used on imports or using the require() because the variables can be overwritten and will not be cuaght by compilers or IDE's. 
+                        </p>
+                      <h6 class="card-subtitle my-2">resolution</h6>
+                      <p>Use the const keyword instead for setting require() and imports. <br/>
+                        Then in local scope such as in functions use the keyword let for vaules that are mutable. <br/>
+                        The const keyword will ensure that all compilers catch any unintentional varible value changes. <br/>
+                        Using these keywords will also make your code easier to read and more in line with modern Javascript standards.</p>
+                    </div>
+                  </div>
+                  <div class="card col bg-dark" >
+                    <div class="card-body">
+                      <h5 class="card-title">SQL injection #1</h5>
+                      <h6 class="card-subtitle mb-2">SQL injection</h6>
+                      <h6 class="card-subtitle mb-2 ">critical level: High </h6>
+                      <h6 class="card-subtitle mt-2">location: line 72</h6>
+                      <p class="card-text">
+                        Evidence: line 72: <code> theQuery = "SELECT * FROM passengers WHERE username = '" + usernameEntry + "'"; </code>
+                        <br/>
+                        The user can simply put any string they desire, which includes SQL code to escape the query and perform other actions on the database. 
+                        </p>
+                        
+                        <h6 class="card-subtitle my-2">Resolution</h6>
+                        <p>
+                        An example of a way to approach this vulnerability can be found on line: 26
+                        <code>
+                            query('INSERT INTO passengers (username, lat, lng) VALUES ($1, $2, $3)', [username, lat, lng],
+                        </code>
+                        This way is called using a prepared statement with parameters. <br/>
+                        This process ensures that a query can not be escaped as it has been prepared prior to passing our values to it, which is one of the advantages when using a database client library that handles the comuincations. <br/>
+                        </p>                      
+                    </div>
+                  </div>
+                  <div class="card col bg-dark">
+                    <div class="card-body">
+                      <h5 class="card-title">SQL injection #2</h5>
+                      <h6 class="card-subtitle mb-2">SQL injection</h6>
+                      <h6 class="card-subtitle mb-2 ">critical level: High </h6>
+                      <h6 class="card-subtitle mt-2">location: line 87</h6>
+                      <p class="card-text">
+                        Evidence: line 87: 
+                        <code>
+                            theQuery = "SELECT * FROM vehicles WHERE username = '" + usernameEntry + "'";
+                        </code>
+                        <br/>
+                        The user can simply put any string they desire, which includes SQL code to escape the query and perform other actions on the database. 
+                        </p>
+                        
+                        <h6 class="card-subtitle my-2">Resolution</h6>
+                        <p>
+                        An example of a way to approach this vulnerability can be found on line: 26
+                        <code>
+                            query('INSERT INTO passengers (username, lat, lng) VALUES ($1, $2, $3)', [username, lat, lng],
+                        </code>
+                        This way is called using prepared statements with parameters. <br/>
+                        This way ensures that query can not be escaped as it has been prepared prior to passing our values to it, which is one of the advantages when using a database client library that handles the comuincations.
+                        </p>                      
+                    </div>
+                  </div>
+                    <div class="card col bg-dark">
+                        <div class="card-body">
+                          <h5 class="card-title">Cross site scripting or XSS</h5>
+                          <h6 class="card-subtitle mb-2">XSS</h6>
+                          <h6 class="card-subtitle mb-2 ">critical level: High </h6>
+                          <h6 class="card-subtitle mt-2">location: line 107</h6>
+                          <p class="card-text">
+                            Evidence: line 107: 
+                            <code>
+                                indexPage += "< li >" + result.rows[count].username + " requested a vehicle at " + result.rows[count].lat + ", " + result.rows[count].lng + " on " + result.rows[count].created_on + "</ li >";
+                            </code>
+                            <br/>
+                            The usernames are not sanitised or validated. The username being saved could be JS code or injected html elements.
+                            </p>
+                            
+                            <h6 class="card-subtitle my-2">Resolution</h6>
+                            <p>
+                                Escape potential the html and JavaScript before inserting data into html context.
+                            </p>                      
+                        </div>
+                      </div>
+                    <div class="card col bg-dark">
+                        <div class="card-body">
+                          <h5 class="card-title">Validating input</h5>
+                          <h6 class="card-subtitle mb-2">validate username</h6>
+                          <h6 class="card-subtitle mb-2 ">critical level: High </h6>
+                          <h6 class="card-subtitle mt-2">location: entire server file</h6>
+                          <p class="card-text">
+                            Example of evidence: line 107: 
+                            <code>
+                                indexPage += "< li >" + result.rows[count].username + " requested a vehicle at " + result.rows[count].lat + ", " + result.rows[count].lng + " on " + result.rows[count].created_on + "</ li >";
+                            </code>
+                            <br/>
+                            The usernames are not sanitised or validated. <br/> 
+                            The username that is saved could be JS code or injected html elements. <br/> 
+                            This is problem is pervasive throughout the code base. <br/>
+                            Latitude and longitude are validated, but there are no checks for the username anywhere.<br/> 
+                            This one flaw allows for XSS and sql injection and must be addressed.  
+                            </p>
+                            
+                            <h6 class="card-subtitle my-2">Resolution</h6>
+                            <p>
+                                when taking in user input ensure to escape any html or JavaScript before inserting data into database or simply reject the input if it fails a validation step.
+                            </p>                      
+                        </div>
+                    </div>
+                    <div class="card col bg-dark">
+                        <div class="card-body">
+                          <h5 class="card-title">Code bad practice</h5>
+                          <h6 class="card-subtitle mb-2">Using database root user</h6>
+                          <h6 class="card-subtitle mb-2 ">critical level: mid to high </h6>
+                          <h6 class="card-subtitle mt-2">location: entire server js file</h6>
+                          <p class="card-text">
+                            Currently the code seemingly connects to a database leaving the connection open and not authencating a user using environment variables. <br/>
+                             If not changed an attacker could get escalated privileges if they performed a successful sql injection attack.
+                            </p>
+                          <h6 class="card-subtitle my-2">Resolution</h6>
+                          <p>To mitigate this attack crate a user on the database that only has the privileges and access that are required to have the service continue working.</p>
+                        </div>
+                      </div>
+                </div>
+            </section>
+            <section class="">
+                <h3> Conclusion </h3>
+                <p>In conclusion, notuber has many vulnerabilities and should immediately address these critical vulnerabilities if they wish to continue operating their service.</p>
+            </section>
+        </main>
+    </body> 
+</html> 
